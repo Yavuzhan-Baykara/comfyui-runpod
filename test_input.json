@@ -1,63 +1,295 @@
 {
   "input": {
-    "workflow": {
-      "3": {
-        "inputs": {
-          "seed": 234234,
-          "steps": 20,
-          "cfg": 8,
-          "sampler_name": "euler",
-          "scheduler": "normal",
-          "denoise": 1,
-          "model": ["4", 0],
-          "positive": ["6", 0],
-          "negative": ["7", 0],
-          "latent_image": ["5", 0]
-        },
-        "class_type": "KSampler"
-      },
-      "4": {
-        "inputs": {
-          "ckpt_name": "sd_xl_base_1.0.safetensors"
-        },
-        "class_type": "CheckpointLoaderSimple"
-      },
-      "5": {
-        "inputs": {
-          "width": 512,
-          "height": 512,
-          "batch_size": 1
-        },
-        "class_type": "EmptyLatentImage"
-      },
-      "6": {
-        "inputs": {
-          "text": "beautiful scenery nature glass bottle landscape, purple galaxy bottle,",
-          "clip": ["4", 1]
-        },
-        "class_type": "CLIPTextEncode"
-      },
-      "7": {
-        "inputs": {
-          "text": "text, watermark",
-          "clip": ["4", 1]
-        },
-        "class_type": "CLIPTextEncode"
-      },
-      "8": {
-        "inputs": {
-          "samples": ["3", 0],
-          "vae": ["4", 2]
-        },
-        "class_type": "VAEDecode"
-      },
-      "9": {
-        "inputs": {
-          "filename_prefix": "ComfyUI/test",
-          "images": ["8", 0]
-        },
-        "class_type": "SaveImage"
-      }
+    "workflow": 
+    {
+  "32": {
+    "inputs": {
+      "text": [
+        "92",
+        0
+      ],
+      "random_seed": 306680858334343,
+      "model": "Mistral-7B-Instruct-v0.3.Q4_K_M.gguf",
+      "max_tokens": 4096,
+      "apply_instructions": true,
+      "instructions": [
+        "41",
+        0
+      ],
+      "speak_and_recognation": true,
+      "adv_options_config": [
+        "44",
+        0
+      ]
+    },
+    "class_type": "Searge_LLM_Node",
+    "_meta": {
+      "title": "Searge LLM Node"
     }
+  },
+  "33": {
+    "inputs": {
+      "string": "",
+      "speak_and_recognation": true
+    },
+    "class_type": "String Literal",
+    "_meta": {
+      "title": "PROMPT"
+    }
+  },
+  "41": {
+    "inputs": {
+      "string": "Your job is to generate a an explanatory prompt using the \"{prompt}\". Do not add extra details, just make it explanatory and don't make it longer than 600 characters. This prompt will be used for t5xxl_l\n",
+      "speak_and_recognation": true
+    },
+    "class_type": "String Literal",
+    "_meta": {
+      "title": "String Literal"
+    }
+  },
+  "44": {
+    "inputs": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "top_k": 40,
+      "repetition_penalty": 1.1
+    },
+    "class_type": "Searge_AdvOptionsNode",
+    "_meta": {
+      "title": "Searge Advanced Options Node"
+    }
+  },
+  "50": {
+    "inputs": {
+      "text": [
+        "92",
+        0
+      ],
+      "random_seed": 306680858334343,
+      "model": "Mistral-7B-Instruct-v0.3.Q4_K_M.gguf",
+      "max_tokens": 4096,
+      "apply_instructions": true,
+      "instructions": [
+        "58",
+        0
+      ],
+      "speak_and_recognation": true,
+      "adv_options_config": [
+        "44",
+        0
+      ]
+    },
+    "class_type": "Searge_LLM_Node",
+    "_meta": {
+      "title": "Searge LLM Node"
+    }
+  },
+  "58": {
+    "inputs": {
+      "string": "Your job is to extract traits from \"{prompt}\" and create a new prompt by converting each trait to lowercase and separating them with commas. This prompt will be used for clip_l which is for stable diffusion.",
+      "speak_and_recognation": true
+    },
+    "class_type": "String Literal",
+    "_meta": {
+      "title": "String Literal"
+    }
+  },
+  "61": {
+    "inputs": {
+      "clip_l": [
+        "50",
+        0
+      ],
+      "t5xxl": [
+        "32",
+        0
+      ],
+      "guidance": 2.5,
+      "speak_and_recognation": true,
+      "clip": [
+        "100",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncodeFlux",
+    "_meta": {
+      "title": "CLIPTextEncodeFlux"
+    }
+  },
+  "63": {
+    "inputs": {
+      "samples": [
+        "81",
+        0
+      ],
+      "vae": [
+        "73",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "64": {
+    "inputs": {
+      "filename_prefix": "ComfyUI",
+      "images": [
+        "63",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "65": {
+    "inputs": {
+      "unet_name": "flux1-dev-bnb-nf4-v2.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "66": {
+    "inputs": {
+      "clip_name1": "t5\\t5xxl_fp8_e4m3fn.safetensors.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux"
+    },
+    "class_type": "DualCLIPLoader",
+    "_meta": {
+      "title": "DualCLIPLoader"
+    }
+  },
+  "70": {
+    "inputs": {
+      "megapixel": "1.0",
+      "aspect_ratio": "1:1 (Perfect Square)",
+      "custom_ratio": false,
+      "custom_aspect_ratio": "1:1"
+    },
+    "class_type": "FluxResolutionNode",
+    "_meta": {
+      "title": "Flux Resolution Calculator"
+    }
+  },
+  "71": {
+    "inputs": {
+      "width": [
+        "70",
+        0
+      ],
+      "height": [
+        "70",
+        1
+      ],
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "73": {
+    "inputs": {
+      "vae_name": "FLUX1\\ae.sft"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "81": {
+    "inputs": {
+      "sampler_name": "euler",
+      "scheduler": "beta",
+      "steps": 20,
+      "denoise": 1,
+      "noise_seed": 139531927914528,
+      "model": [
+        "100",
+        0
+      ],
+      "conditioning": [
+        "61",
+        0
+      ],
+      "latent_image": [
+        "71",
+        0
+      ]
+    },
+    "class_type": "FluxSampler",
+    "_meta": {
+      "title": "Flux Sampler"
+    }
+  },
+  "92": {
+    "inputs": {
+      "from_translate": "auto",
+      "to_translate": "english",
+      "add_proxies": false,
+      "proxies": "",
+      "auth_data": "",
+      "service": "MyMemoryTranslator [free]",
+      "text": [
+        "33",
+        0
+      ],
+      "Show proxy": "proxy_hide",
+      "Show authorization": "authorization_hide",
+      "speak_and_recognation": true
+    },
+    "class_type": "DeepTranslatorTextNode",
+    "_meta": {
+      "title": "Deep Translator Text Node"
+    }
+  },
+  "99": {
+    "inputs": {
+      "switch_1": "On",
+      "lora_name_1": "Hyper-FLUX.1-dev-16steps-lora.safetensors",
+      "model_weight_1": 0.12,
+      "clip_weight_1": 1,
+      "switch_2": "Off",
+      "lora_name_2": "None",
+      "model_weight_2": 1,
+      "clip_weight_2": 1,
+      "switch_3": "Off",
+      "lora_name_3": "None",
+      "model_weight_3": 1,
+      "clip_weight_3": 1
+    },
+    "class_type": "CR LoRA Stack",
+    "_meta": {
+      "title": "💊 CR LoRA Stack"
+    }
+  },
+  "100": {
+    "inputs": {
+      "model": [
+        "65",
+        0
+      ],
+      "clip": [
+        "66",
+        0
+      ],
+      "lora_stack": [
+        "99",
+        0
+      ]
+    },
+    "class_type": "CR Apply LoRA Stack",
+    "_meta": {
+      "title": "💊 CR Apply LoRA Stack"
+    }
+  }
+}
   }
 }
