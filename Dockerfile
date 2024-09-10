@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
     python3.10 \
     python3-pip \
     git \
-    wget
+    wget \
+    aria2c
 
 # Clean up to reduce image size
 RUN apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
@@ -21,7 +22,9 @@ RUN apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 # Clone ComfyUI repository
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /comfyui
 RUN git clone https://github.com/SeargeDP/ComfyUI_Searge_LLM /comfyui/custom_nodes/ComfyUI_Searge_LLM
-
+RUN git clone https://github.com/giriss/comfy-image-saver /comfyui/custom_nodes/comfy-image-saver
+RUN git clone https://github.com/AlekPet/ComfyUI_Custom_Nodes_AlekPet /comfyui/custom_nodes/ComfyUI_Custom_Nodes_AlekPet
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager /comfyui/custom_nodes/ComfyUI-Manager
 # Change working directory to ComfyUI
 WORKDIR /comfyui
 
@@ -29,12 +32,24 @@ WORKDIR /comfyui
 RUN pip3 install --upgrade --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
     && pip3 install --upgrade -r requirements.txt
 
+#----------------------------------------------------------------------
 # Change working directory to ComfyUI_Searge_LLM
 WORKDIR /comfyui/custom_nodes/ComfyUI_Searge_LLM
-
 # Install ComfyUI dependencies
 RUN pip3 install --upgrade -r requirements.txt
-
+# Change working directory to comfy-image-saver
+WORKDIR /comfyui/custom_nodes/comfy-image-saver
+# Install ComfyUI dependencies
+RUN pip3 install --upgrade -r requirements.txt
+# Change working directory to comfy-image-saver
+WORKDIR /comfyui/custom_nodes/ComfyUI_Custom_Nodes_AlekPet
+# Install ComfyUI dependencies
+RUN pip3 install --upgrade -r requirements.txt
+# Change working directory to comfy-image-saver
+WORKDIR /comfyui/custom_nodes/ComfyUI-Manager
+# Install ComfyUI dependencies
+RUN pip3 install --upgrade -r requirements.txt
+#----------------------------------------------------------------------
 # Install runpod
 RUN pip3 install runpod requests
 
@@ -71,6 +86,10 @@ RUN mkdir -p /models/llm_gguf/ && \
 
 # Loras
 RUN wget -O models/loras/Hyper-FLUX.1-dev-16steps-lora.safetensors https://huggingface.co/ByteDance/Hyper-SD/resolve/main/Hyper-FLUX.1-dev-16steps-lora.safetensors
+RUN aria2c --console-log-level=error -c -x 16 -s 16 -k 1M https://civitai.com/api/download/models/747534?token=3f3b111c6e2d0dc793cd5bccc635c06e -d models/loras -o Cyberpunk_Anime_Style.safetensors
+RUN aria2c --console-log-level=error -c -x 16 -s 16 -k 1M https://civitai.com/api/download/models/755549?token=3f3b111c6e2d0dc793cd5bccc635c06e -d models/loras -o Sinfully_Stylish.safetensors
+RUN aria2c --console-log-level=error -c -x 16 -s 16 -k 1M https://civitai.com/api/download/models/740927?token=3f3b111c6e2d0dc793cd5bccc635c06e -d models/loras -o Neon_Cyberpunk_Splash_Art_FLUX.safetensors
+RUN aria2c --console-log-level=error -c -x 16 -s 16 -k 1M https://civitai.com/api/download/models/727461?token=3f3b111c6e2d0dc793cd5bccc635c06e -d models/loras -o real-lora.safetensors
 
 
 # Stage 3: Final image
